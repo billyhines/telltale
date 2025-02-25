@@ -1,0 +1,44 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.log
+
+# Environment variables
+.env
+.flaskenv
+
+# Development
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Flask migration files
+migrations/versions/
+
+# User uploads
+app/static/uploads/*
+!app/static/uploads/.gitkeep
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/

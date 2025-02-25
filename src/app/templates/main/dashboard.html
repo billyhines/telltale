@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Sailing Analytics - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4">Dashboard</h1>
+    
+    <!-- Key statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-4">
+            <div class="card stat-card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-check stat-icon"></i>
+                        </div>
+                        <div class="col">
+                            <h5 class="card-title text-muted">Total Sessions</h5>
+                            <h2 class="mb-0">{{ total_sessions }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card stat-card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-auto">
+                            <i class="fas fa-route stat-icon"></i>
+                        </div>
+                        <div class="col">
+                            <h5 class="card-title text-muted">Total Distance</h5>
+                            <h2 class="mb-0">{{ total_distance|round(1) }} <small class="text-muted">NM</small></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card stat-card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-auto">
+                            <i class="fas fa-sailboat stat-icon"></i>
+                        </div>
+                        <div class="col">
+                            <h5 class="card-title text-muted">Your Boats</h5>
+                            <h2 class="mb-0">{{ boats|length }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card stat-card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-auto">
+                            <i class="fas fa-trophy stat-icon"></i>
+                        </div>
+                        <div class="col">
+                            <h5 class="card-title text-muted">Avg. Session</h5>
+                            <h2 class="mb-0">
+                                {% if total_sessions > 0 %}
+                                    {{ (total_distance / total_sessions)|round(1) }} <small class="text-muted">NM</small>
+                                {% else %}
+                                    0 <small class="text-muted">NM</small>
+                                {% endif %}
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Recent Sessions -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Sailing Sessions</h5>
+                    <a href="{{ url_for('sailing.sessions_list') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_sessions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Name</th>
+                                        <th>Location</th>
+                                        <th>Distance</th>
+                                        <th>Avg Speed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for session in recent_sessions %}
+                                        <tr>
+                                            <td>{{ session.date.strftime('%Y-%m-%d') }}</td>
+                                            <td>
+                                                <a href="{{ url_for('sailing.view_session', id=session.id) }}">
+                                                    {{ session.name }}
+                                                </a>
+                                            </td>
+                                            <td>{{ session.location or 'N/A' }}</td>
+                                            <td>{{ session.distance|round(1) if session.distance else 'N/A' }} NM</td>
+                                            <td>{{ session.avg_speed|round(1) if session.avg_speed else 'N/A' }} kt</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-sailboat fa-3x text-muted mb-3"></i>
+                            <h5>No sailing sessions recorded yet</h5>
+                            <p class="text-muted">Start tracking your sailing adventures</p>
+                            <a href="{{ url_for('sailing.new_session') }}" class="btn btn-primary">Log New Session</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Boat Summary -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Your Boats</h5>
+                    <a href="{{ url_for('sailing.new_boat') }}" class="btn btn-sm btn-outline-primary">Add Boat</a>
+                </div>
+                <div class="card-body">
+                    {% if boats %}
+                        <div class="list-group list-group-flush">
+                            {% for boat in boats %}
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ boat.name }}</h6>
+                                        <small>{{ boat.boat_type }}</small>
+                                    </div>
+                                    <p class="mb-1 text-muted">
+                                        {% if boat.manufacturer %}{{ boat.manufacturer }}{% endif %}
+                                        {% if boat.model %} {{ boat.model }}{% endif %}
+                                        {% if boat.year_built %} ({{ boat.year_built }}){% endif %}
+                                    </p>
+                                    <small>
+                                        <a href="{{ url_for('sailing.edit_boat', id=boat.id) }}" class="text-decoration-none">
+                                            <i class="fas fa-edit me-1"></i>Edit
+                                        </a>
+                                    </small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-ship fa-3x text-muted mb-3"></i>
+                            <h5>No boats added yet</h5>
+                            <p class="text-muted">Add your first boat to get started</p>
+                            <a href="{{ url_for('sailing.new_boat') }}" class="btn btn-primary">Add Boat</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Call to action -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm bg-light">
+                <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-center p-4">
+                    <div>
+                        <h4 class="mb-1">Ready to log your next sailing adventure?</h4>
+                        <p class="mb-0 text-muted">Keep track of your progress and improve your sailing skills</p>
+                    </div>
+                    <div class="mt-3 mt-md-0">
+                        <a href="{{ url_for('sailing.new_session') }}" class="btn btn-primary">Log New Session</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
