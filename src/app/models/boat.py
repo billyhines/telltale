@@ -22,7 +22,7 @@ class Boat(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     
     # Relationships
-    sailing_sessions = db.relationship('SailingSession', backref='boat', lazy='dynamic')
+    races = db.relationship('Race', backref='boat', lazy='dynamic')
     
     def __repr__(self):
         return f'<Boat {self.name}>'

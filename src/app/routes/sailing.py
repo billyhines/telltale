@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from app import db
 from app.models.boat import Boat
-from app.models.sailing_session import SailingSession
+from app.models.race import Race
 from app.forms.boat import BoatForm
 from app.forms.sailing import SailingSessionForm
 from werkzeug.utils import secure_filename
@@ -90,8 +90,8 @@ def delete_boat(id):
 @login_required
 def sessions_list():
     """Show list of user's sailing sessions."""
-    sessions = SailingSession.query.filter_by(user_id=current_user.id)\
-        .order_by(SailingSession.date.desc())\
+    sessions = Race.query.filter_by(user_id=current_user.id)\
+        .order_by(Race.date.desc())\
         .all()
     return render_template('sailing/sessions_list.html', sessions=sessions)
 
@@ -128,7 +128,7 @@ def new_session():
         if form.start_time.data and form.end_time.data:
             duration = int((form.end_time.data - form.start_time.data).total_seconds())
         
-        session = SailingSession(
+        session = Race(
             name=form.name.data,
             date=form.date.data,
             start_time=form.start_time.data,
@@ -159,7 +159,7 @@ def new_session():
 @login_required
 def view_session(id):
     """View details of a sailing session."""
-    session = SailingSession.query.get_or_404(id)
+    session = Race.query.get_or_404(id)
     
     # Check if the current user owns this session
     if session.user_id != current_user.id:
@@ -173,7 +173,7 @@ def view_session(id):
 @login_required
 def edit_session(id):
     """Edit an existing sailing session."""
-    session = SailingSession.query.get_or_404(id)
+    session = Race.query.get_or_404(id)
     
     # Check if the current user owns this session
     if session.user_id != current_user.id:
@@ -221,7 +221,7 @@ def edit_session(id):
 @login_required
 def delete_session(id):
     """Delete a sailing session."""
-    session = SailingSession.query.get_or_404(id)
+    session = Race.query.get_or_404(id)
     
     # Check if the current user owns this session
     if session.user_id != current_user.id:
@@ -245,42 +245,42 @@ def delete_session(id):
 def analytics():
     """Show sailing analytics dashboard."""
     # Get overall sailing statistics
-    total_sessions = SailingSession.query.filter_by(user_id=current_user.id).count()
-    total_distance = db.session.query(db.func.sum(SailingSession.distance))\
-        .filter(SailingSession.user_id == current_user.id)\
+    total_sessions = Race.query.filter_by(user_id=current_user.id).count()
+    total_distance = db.session.query(db.func.sum(Race.distance))\
+        .filter(Race.user_id == current_user.id)\
         .scalar() or 0
-    avg_speed = db.session.query(db.func.avg(SailingSession.avg_speed))\
-        .filter(SailingSession.user_id == current_user.id)\
+    avg_speed = db.session.query(db.func.avg(Race.avg_speed))\
+        .filter(Race.user_id == current_user.id)\
         .scalar() or 0
-    max_speed = db.session.query(db.func.max(SailingSession.max_speed))\
-        .filter(SailingSession.user_id == current_user.id)\
+    max_speed = db.session.query(db.func.max(Race.max_speed))\
+        .filter(Race.user_id == current_user.id)\
         .scalar() or 0
     
     # Get sessions by month
     sessions_by_month = db.session.query(
-        db.func.strftime('%Y-%m', SailingSession.date).label('month'),
+        db.func.strftime('%Y-%m', Race.date).label('month'),
         db.func.count().label('count'),
-        db.func.sum(SailingSession.distance).label('distance')
+        db.func.sum(Race.distance).label('distance')
     ).filter(
-        SailingSession.user_id == current_user.id
+        Race.user_id == current_user.id
     ).group_by(
-        db.func.strftime('%Y-%m', SailingSession.date)
+        db.func.strftime('%Y-%m', Race.date)
     ).order_by(
-        db.func.strftime('%Y-%m', SailingSession.date)
+        db.func.strftime('%Y-%m', Race.date)
     ).all()
     
     # Get sessions by boat
     sessions_by_boat = db.session.query(
         Boat.name.label('boat_name'),
         db.func.count().label('count'),
-        db.func.sum(SailingSession.distance).label('distance'),
-        db.func.avg(SailingSession.avg_speed).label('avg_speed')
+        db.func.sum(Race.distance).label('distance'),
+        db.func.avg(Race.avg_speed).label('avg_speed')
     ).join(
-        Boat, SailingSession.boat_id == Boat.id
+        Boat, Race.boat_id == Boat.id
     ).filter(
-        SailingSession.user_id == current_user.id
+        Race.user_id == current_user.id
     ).group_by(
-        SailingSession.boat_id
+        Race.boat_id
     ).all()
     
     return render_template(

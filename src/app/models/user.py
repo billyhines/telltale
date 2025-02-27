@@ -15,11 +15,10 @@ class User(UserMixin, db.Model):
     first_name = db.Column(db.String(64))
     last_name = db.Column(db.String(64))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_login = db.Column(db.DateTime, nullable=True)
     
     # Relationships
-    boats = db.relationship('Boat', backref='owner', lazy='dynamic')
-    sailing_sessions = db.relationship('SailingSession', backref='sailor', lazy='dynamic')
+    races = db.relationship('Race', backref='user', lazy='dynamic', cascade='all, delete-orphan')
     
     @property
     def password(self):
@@ -34,6 +33,11 @@ class User(UserMixin, db.Model):
     def verify_password(self, password):
         """Verify password against stored hash."""
         return check_password_hash(self.password_hash, password)
+        
+    def update_last_login(self):
+        """Update the last login timestamp."""
+        self.last_login = datetime.utcnow()
+        db.session.commit()
     
     def __repr__(self):
         return f'<User {self.username}>'

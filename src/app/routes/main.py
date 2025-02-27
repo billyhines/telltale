@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, current_app
 from flask_login import login_required, current_user
-from app.models.sailing_session import SailingSession
+from app.models.race import Race
 
 main = Blueprint('main', __name__)
 
@@ -16,15 +16,15 @@ def index():
 def dashboard():
     """Render the user dashboard with sailing analytics."""
     # Get user's recent sailing sessions
-    recent_sessions = SailingSession.query.filter_by(user_id=current_user.id)\
-        .order_by(SailingSession.date.desc())\
+    recent_sessions = Race.query.filter_by(user_id=current_user.id)\
+        .order_by(Race.date.desc())\
         .limit(5)\
         .all()
     
     # Calculate total stats
-    total_sessions = SailingSession.query.filter_by(user_id=current_user.id).count()
-    total_distance = SailingSession.query.filter_by(user_id=current_user.id)\
-        .with_entities(SailingSession.distance)\
+    total_sessions = Race.query.filter_by(user_id=current_user.id).count()
+    total_distance = Race.query.filter_by(user_id=current_user.id)\
+        .with_entities(Race.distance)\
         .all()
     total_distance = sum([d[0] for d in total_distance if d[0] is not None])
     

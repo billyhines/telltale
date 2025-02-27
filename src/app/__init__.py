@@ -43,6 +43,23 @@ def create_app(config_name='default'):
     # Shell context
     @app.shell_context_processor
     def make_shell_context():
-        return dict(app=app, db=db)
+        return dict(
+            app=app, 
+            db=db, 
+            User=User, 
+            Race=Race, 
+            RaceMark=RaceMark, 
+            RaceSegment=RaceSegment,
+            Maneuver=Maneuver,
+            TrackPoint=TrackPoint
+        )
     
     return app
+
+# Import models after db is defined to avoid circular imports
+from app.models.user import User
+from app.models.race import Race
+from app.models.race_mark import RaceMark
+from app.models.race_segment import RaceSegment
+from app.models.maneuver import Maneuver
+from app.models.track_point import TrackPoint
