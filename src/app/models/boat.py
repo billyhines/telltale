@@ -21,8 +21,8 @@ class Boat(db.Model):
     # Foreign keys
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     
-    # Relationships
-    races = db.relationship('Race', backref='boat', lazy='dynamic')
+    # Relationships without backrefs - we'll handle the other side separately
+    races = db.relationship('Race', foreign_keys='Race.boat_id', lazy='dynamic', overlaps="boat")
     
     def __repr__(self):
         return f'<Boat {self.name}>'

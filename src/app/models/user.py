@@ -19,6 +19,7 @@ class User(UserMixin, db.Model):
     
     # Relationships
     races = db.relationship('Race', backref='user', lazy='dynamic', cascade='all, delete-orphan')
+    boats = db.relationship('Boat', backref='owner', lazy='dynamic')
     
     @property
     def password(self):

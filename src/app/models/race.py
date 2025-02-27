@@ -32,7 +32,7 @@ class Race(db.Model):
     segments = db.relationship('RaceSegment', backref='race', lazy='dynamic', cascade='all, delete-orphan')
     maneuvers = db.relationship('Maneuver', backref='race', lazy='dynamic', cascade='all, delete-orphan')
     track_points = db.relationship('TrackPoint', backref='race', lazy='dynamic', cascade='all, delete-orphan')
-    boat = db.relationship('Boat', backref='races')
+    boat = db.relationship('Boat', foreign_keys=[boat_id])
     
     @property
     def formatted_duration(self):

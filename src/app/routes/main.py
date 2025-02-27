@@ -17,7 +17,7 @@ def dashboard():
     """Render the user dashboard with sailing analytics."""
     # Get user's recent sailing sessions
     recent_sessions = Race.query.filter_by(user_id=current_user.id)\
-        .order_by(Race.date.desc())\
+        .order_by(Race.race_date.desc())\
         .limit(5)\
         .all()
     
