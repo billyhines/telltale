@@ -55,3 +55,29 @@ class RegistrationForm(FlaskForm):
         """Validate username is not already taken."""
         if User.query.filter_by(username=field.data).first():
             raise ValidationError('Username already in use.')
+
+class RequestResetForm(FlaskForm):
+    """Form for requesting a password reset."""
+    email = StringField('Email', validators=[
+        DataRequired(),
+        Email()
+    ])
+    submit = SubmitField('Request Password Reset')
+
+    def validate_email(self, field):
+        """Validate that email exists in database."""
+        user = User.query.filter_by(email=field.data).first()
+        if user is None:
+            raise ValidationError('No account with that email. Please register first.')
+
+class ResetPasswordForm(FlaskForm):
+    """Form for resetting password."""
+    password = PasswordField('New Password', validators=[
+        DataRequired(),
+        Length(min=8, message='Password must be at least 8 characters long')
+    ])
+    password2 = PasswordField('Confirm New Password', validators=[
+        DataRequired(),
+        EqualTo('password', message='Passwords must match')
+    ])
+    submit = SubmitField('Reset Password')

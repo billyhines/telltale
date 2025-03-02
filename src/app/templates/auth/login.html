@@ -24,7 +24,7 @@
                             </div>
                         {% endif %}
                     </div>
-                    
+
                     <div class="mb-3">
                         {{ form.password.label(class="form-label required-field") }}
                         {{ form.password(class="form-control", placeholder="Enter your password") }}
@@ -35,6 +35,9 @@
                                 {% endfor %}
                             </div>
                         {% endif %}
+                        <div class="text-end mt-1">
+                            <a href="{{ url_for('auth.reset_request') }}" class="small">Forgot password?</a>
+                        </div>
                     </div>
                     
                     <div class="mb-3 form-check">

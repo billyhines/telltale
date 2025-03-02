@@ -1,7 +1,11 @@
 from app import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from itsdangerous import URLSafeTimedSerializer
+from flask import current_app
+from datetime import datetime, timedelta
+import hashlib
+import os
 
 
 class User(UserMixin, db.Model):
@@ -39,6 +43,25 @@ class User(UserMixin, db.Model):
         """Update the last login timestamp."""
         self.last_login = datetime.utcnow()
         db.session.commit()
+
+    def generate_reset_token(self):
+        """Generate a secure token for password reset."""
+        serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        return serializer.dumps(self.email, salt='password-reset-salt')
+
+    @staticmethod
+    def verify_reset_token(token, expiration=3600):
+        """Verify the reset token."""
+        serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        try:
+            email = serializer.loads(
+                token,
+                salt='password-reset-salt',
+                max_age=expiration
+            )
+        except:
+            return None
+        return User.query.filter_by(email=email).first()
     
     def __repr__(self):
         return f'<User {self.username}>'
