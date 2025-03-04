@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Sailing Analytics - Home{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="jumbotron bg-light p-5 rounded">
+            <h1 class="display-4">Welcome to Sailing Analytics</h1>
+            <p class="lead">Track, analyze, and improve your sailing performance with advanced analytics.</p>
+            <hr class="my-4">
+            <p>Upload your GPX files, visualize your routes, analyze your speed patterns, and gain insights into your sailing performance.</p>
+            {% if not current_user.is_authenticated %}
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary me-md-2">Register</a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary">Login</a>
+            </div>
+            {% else %}
+            <a href="{{ url_for('sailing.upload_gpx') }}" class="btn btn-primary">Upload GPX</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <h3>Track Your Routes</h3>
+        <p>Upload GPX files from your sailing trips and visualize your routes on interactive maps.</p>
+    </div>
+    <div class="col-md-4">
+        <h3>Analyze Performance</h3>
+        <p>Get detailed statistics about your speed, distance, duration, and other key metrics.</p>
+    </div>
+    <div class="col-md-4">
+        <h3>Compare Sessions</h3>
+        <p>Compare different sailing sessions to identify patterns and improve your technique.</p>
+    </div>
+</div>
+{% endblock %}
