@@ -13,11 +13,12 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_login = db.Column(db.DateTime)
     is_active = db.Column(db.Boolean, default=True)
     is_admin = db.Column(db.Boolean, default=False)
     
-    # One-to-many: a user can have many sailing sessions
-    sailing_sessions = db.relationship('SailingSession', backref='user', lazy='dynamic')
+    # One-to-many: a user can have many races
+    races = db.relationship('Race', backref='user', lazy='dynamic', cascade='all, delete-orphan')
     
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -29,6 +30,15 @@ class User(UserMixin, db.Model):
     def verify_password(self, password):
         """Verify a plaintext password against the stored hash"""
         return check_password_hash(self.password_hash, password)
+    
+    def update_last_login(self):
+        """Update the last login timestamp"""
+        self.last_login = datetime.utcnow()
+        db.session.commit()
+    
+    def get_recent_races(self, limit=5):
+        """Get the user's most recent races"""
+        return self.races.order_by(Race.race_date.desc()).limit(limit).all()
     
     def __repr__(self):
         return f'<User {self.username}>'
