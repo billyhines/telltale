@@ -38,7 +38,23 @@ class User(UserMixin, db.Model):
     
     def get_recent_races(self, limit=5):
         """Get the user's most recent races"""
+        from app.models.race import Race
         return self.races.order_by(Race.race_date.desc()).limit(limit).all()
+    
+    # Flask-Login required methods
+    @property
+    def is_authenticated(self):
+        """Return True if the user is authenticated"""
+        return True
+    
+    @property
+    def is_anonymous(self):
+        """Return True if the user is anonymous"""
+        return False
+    
+    def get_id(self):
+        """Return the user id as unicode string"""
+        return str(self.id)
     
     def __repr__(self):
         return f'<User {self.username}>'

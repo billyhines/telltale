@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}My Account - Sailing Analytics{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">My Account</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Account Information</h5>
+                        <p><strong>Username:</strong> {{ current_user.username }}</p>
+                        <p><strong>Email:</strong> {{ current_user.email }}</p>
+                        <p><strong>Member Since:</strong> {{ current_user.created_at.strftime('%Y-%m-%d') }}</p>
+                        <p><strong>Last Login:</strong> {{ current_user.last_login.strftime('%Y-%m-%d %H:%M') if current_user.last_login else 'N/A' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Account Actions</h5>
+                        <div class="list-group">
+                            <a href="#" class="list-group-item list-group-item-action">Change Password</a>
+                            <a href="#" class="list-group-item list-group-item-action">Update Profile</a>
+                            <a href="{{ url_for('sailing.list_sessions') }}" class="list-group-item list-group-item-action">View My Sailing Sessions</a>
+                            <a href="{{ url_for('sailing.upload_gpx') }}" class="list-group-item list-group-item-action">Upload New GPX</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Recent Activity</h4>
+            </div>
+            <div class="card-body">
+                {% if current_user.races.count() > 0 %}
+                    <div class="list-group">
+                        {% for race in current_user.get_recent_races() %}
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ race.race_name }}</h5>
+                                    <small>{{ race.race_date.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                <p class="mb-1">
+                                    {% if race.total_distance %}
+                                        Distance: {{ "%.2f"|format(race.total_distance) }} nm | 
+                                        Max Speed: {{ "%.1f"|format(race.max_speed) }} knots
+                                    {% else %}
+                                        No analysis data available
+                                    {% endif %}
+                                </p>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        You haven't uploaded any sailing data yet. 
+                        <a href="{{ url_for('sailing.upload_gpx') }}" class="alert-link">Upload your first GPX file</a> to get started!
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
