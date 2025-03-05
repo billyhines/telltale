@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Sailing Analytics{% endblock %}
+
+{% block styles %}
+<!-- Dashboard specific styles -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="user-profile">
+            <div class="user-avatar">
+                <i class="fas fa-user-circle fa-3x"></i>
+            </div>
+            <div class="user-info">
+                <h5>{{ current_user.username }}</h5>
+                <p>Member since {{ current_user.created_at.strftime('%b %Y') }}</p>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('main.dashboard') }}">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('sailing.list_sessions') }}">
+                        <i class="fas fa-ship"></i> My Races
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('sailing.upload_gpx') }}">
+                        <i class="fas fa-upload"></i> Upload GPX
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('auth.account') }}">
+                        <i class="fas fa-user-cog"></i> Account Settings
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="dashboard-header">
+            <h2>Welcome to your Sailing Dashboard</h2>
+            <p>Here's an overview of your sailing activity</p>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Races</h5>
+                        <div class="stat-value">{{ race_count }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Distance</h5>
+                        <div class="stat-value">{{ "%.1f"|format(total_distance) }} nm</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Max Speed</h5>
+                        <div class="stat-value">{{ "%.1f"|format(max_speed) }} kts</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Last Activity</h5>
+                        <div class="stat-value">
+                            {% if recent_races and recent_races|length > 0 %}
+                                {{ recent_races[0].race_date.strftime('%d %b %Y') }}
+                            {% else %}
+                                None
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Races -->
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Recent Races</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_races and recent_races|length > 0 %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Race Name</th>
+                                            <th>Date</th>
+                                            <th>Distance</th>
+                                            <th>Duration</th>
+                                            <th>Max Speed</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for race in recent_races %}
+                                            <tr>
+                                                <td>{{ race.race_name }}</td>
+                                                <td>{{ race.race_date.strftime('%Y-%m-%d') }}</td>
+                                                <td>{{ "%.2f"|format(race.total_distance) if race.total_distance else "N/A" }} nm</td>
+                                                <td>{{ race.duration_formatted if race.duration else "N/A" }}</td>
+                                                <td>{{ "%.1f"|format(race.max_speed) if race.max_speed else "N/A" }} kts</td>
+                                                <td>
+                                                    <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="text-center mt-3">
+                                <a href="{{ url_for('sailing.list_sessions') }}" class="btn btn-outline-primary">View All Races</a>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                You haven't uploaded any sailing data yet. 
+                                <a href="{{ url_for('sailing.upload_gpx') }}" class="alert-link">Upload your first GPX file</a> to get started!
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('sailing.upload_gpx') }}" class="btn btn-primary mb-2">
+                                <i class="fas fa-upload me-2"></i> Upload New GPX
+                            </a>
+                            <a href="#" class="btn btn-outline-primary mb-2">
+                                <i class="fas fa-chart-line me-2"></i> Compare Races
+                            </a>
+                            <a href="#" class="btn btn-outline-primary mb-2">
+                                <i class="fas fa-cog me-2"></i> Manage Wind Settings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Performance Tips</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Set wind direction for better VMG analysis</li>
+                            <li class="list-group-item">Mark race buoys to analyze leg performance</li>
+                            <li class="list-group-item">Compare tacks to improve maneuver efficiency</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Font Awesome for icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<!-- Dashboard specific scripts -->
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

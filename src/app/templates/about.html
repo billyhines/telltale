@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}About - Sailing Analytics{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">About Sailing Analytics</h2>
+                </div>
+                <div class="card-body">
+                    <h3>Our Mission</h3>
+                    <p class="lead">
+                        Sailing Analytics is designed to help sailors improve their performance through data analysis and visualization.
+                    </p>
+                    <p>
+                        Whether you're a competitive racer or a weekend sailor, our platform provides the tools you need to analyze your sailing patterns, track your progress, and identify areas for improvement.
+                    </p>
+                    
+                    <h3 class="mt-4">Key Features</h3>
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item">
+                            <strong>GPX Tracking:</strong> Upload your GPX tracks from any GPS device or sailing app
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Route Visualization:</strong> See your sailing routes on detailed maps
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Speed Analysis:</strong> View speed data with color-coded visualizations
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Race Analysis:</strong> Mark buoys, analyze legs, and evaluate performance
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Maneuver Detection:</strong> Automatically detect tacks and gybes with performance metrics
+                        </li>
+                        <li class="list-group-item">
+                            <strong>VMG Calculation:</strong> Calculate Velocity Made Good for upwind/downwind legs
+                        </li>
+                    </ul>
+                    
+                    <h3>How It Works</h3>
+                    <p>
+                        Sailing Analytics uses advanced algorithms to process your GPX data and provide meaningful insights. Simply upload your GPX files, add course information like wind direction and mark positions, and let our system do the analysis.
+                    </p>
+                    <p>
+                        The platform calculates key metrics like:
+                    </p>
+                    <ul>
+                        <li>Speed over ground</li>
+                        <li>Velocity Made Good (VMG)</li>
+                        <li>Maneuver efficiency</li>
+                        <li>Leg performance</li>
+                        <li>Wind angle optimization</li>
+                    </ul>
+                    
+                    <h3 class="mt-4">Getting Started</h3>
+                    <p>
+                        Ready to analyze your sailing performance? <a href="{{ url_for('auth.register') }}">Create an account</a> or <a href="{{ url_for('auth.login') }}">log in</a> to get started. Then head to the <a href="{{ url_for('sailing.upload_gpx') }}">upload page</a> to add your first GPX file.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
