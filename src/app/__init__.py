@@ -33,6 +33,10 @@ def create_app(config_name='default'):
     from app.routes.sailing import sailing as sailing_blueprint
     app.register_blueprint(sailing_blueprint, url_prefix='/sailing')
     
+    # Register races blueprint
+    from app.routes.races import races as races_blueprint
+    app.register_blueprint(races_blueprint)
+    
     # Initialize error handlers
     from app.routes import errors
     

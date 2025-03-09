@@ -28,13 +28,13 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('sailing.list_sessions') }}">
+                    <a class="nav-link" href="{{ url_for('races.list_races') }}">
                         <i class="fas fa-ship"></i> My Races
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('sailing.upload_gpx') }}">
-                        <i class="fas fa-upload"></i> Upload GPX
+                    <a class="nav-link" href="{{ url_for('races.upload_race') }}">
+                        <i class="fas fa-upload"></i> Upload Race
                     </a>
                 </li>
                 <li class="nav-item">
@@ -44,7 +44,7 @@
                 </li>
             </ul>
         </div>
-    </div>
+        </div>
 
     <!-- Main Content -->
     <div class="main-content">
@@ -138,7 +138,7 @@
                         {% else %}
                             <div class="alert alert-info">
                                 You haven't uploaded any sailing data yet. 
-                                <a href="{{ url_for('sailing.upload_gpx') }}" class="alert-link">Upload your first GPX file</a> to get started!
+                                <a href="{{ url_for('races.upload_race') }}" class="alert-link">Upload your first GPX file</a> to get started!
                             </div>
                         {% endif %}
                     </div>
@@ -153,11 +153,11 @@
                     </div>
                     <div class="card-body">
                         <div class="d-grid gap-2">
-                            <a href="{{ url_for('sailing.upload_gpx') }}" class="btn btn-primary mb-2">
-                                <i class="fas fa-upload me-2"></i> Upload New GPX
+                            <a href="{{ url_for('races.upload_race') }}" class="btn btn-primary mb-2">
+                                <i class="fas fa-upload me-2"></i> Upload New Race
                             </a>
-                            <a href="#" class="btn btn-outline-primary mb-2">
-                                <i class="fas fa-chart-line me-2"></i> Compare Races
+                            <a href="{{ url_for('races.list_races') }}" class="btn btn-outline-primary mb-2">
+                                <i class="fas fa-ship me-2"></i> View My Races
                             </a>
                             <a href="#" class="btn btn-outline-primary mb-2">
                                 <i class="fas fa-cog me-2"></i> Manage Wind Settings

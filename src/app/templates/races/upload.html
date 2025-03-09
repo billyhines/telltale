@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Race - Sailing Analytics{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Upload Race GPX</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.race_name.label(class="form-label") }}
+                            {{ form.race_name(class="form-control" + (" is-invalid" if form.race_name.errors else "")) }}
+                            {% for error in form.race_name.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text">Enter a descriptive name for this race</div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.race_date.label(class="form-label") }}
+                            {{ form.race_date(class="form-control" + (" is-invalid" if form.race_date.errors else ""), type="date") }}
+                            {% for error in form.race_date.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.gpx_file.label(class="form-label") }}
+                            <div class="input-group">
+                                {{ form.gpx_file(class="form-control" + (" is-invalid" if form.gpx_file.errors else ""), 
+                                               style="height: auto;") }}
+                                {% for error in form.gpx_file.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="form-text">Upload a GPX file from your GPS device or sailing app</div>
+                        </div>
+
+                        <div class="alert alert-info mb-4">
+                            <h5 class="alert-heading">GPX File Tips</h5>
+                            <ul class="mb-0">
+                                <li>GPX files are typically exported from GPS devices or sailing apps</li>
+                                <li>Make sure your GPX file includes timestamps for proper analysis</li>
+                                <li>Keep the file size under 10MB for best performance</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ url_for('races.list_races') }}">Back to My Races</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

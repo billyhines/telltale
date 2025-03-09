@@ -2,4 +2,5 @@
 from app.routes.main import main
 from app.routes.auth import auth
 from app.routes.sailing import sailing
+from app.routes.races import races
 from app.routes.errors import errors

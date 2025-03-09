@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}{{ race.race_name }} - Sailing Analytics{% endblock %}
+
+{% block styles %}
+<!-- Add Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<style>
+    .map-container {
+        height: 500px;
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+    }
+    .race-details-card {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>{{ race.race_name }}</h2>
+        <div>
+            <a href="{{ url_for('races.list_races') }}" class="btn btn-outline-primary me-2">
+                <i class="fas fa-chevron-left"></i> Back to Races
+            </a>
+            <form action="{{ url_for('races.delete_race', race_id=race.race_id) }}" method="POST" 
+                  style="display: inline;" 
+                  onsubmit="return confirm('Are you sure you want to delete this race? This action cannot be undone.')">
+                <button type="submit" class="btn btn-outline-danger">
+                    <i class="fas fa-trash-alt"></i> Delete Race
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card race-details-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Race Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Date:</strong> {{ race.race_date.strftime('%Y-%m-%d') }}</p>
+                            <p><strong>Uploaded:</strong> {{ race.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                            <p><strong>Wind Direction:</strong> {{ race.wind_direction if race.wind_direction else 'Not set' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if race.is_processed %}
+                                <p><strong>Total Distance:</strong> {{ "%.2f"|format(race.total_distance) }} nm</p>
+                                <p><strong>Duration:</strong> {{ race.duration_formatted }}</p>
+                                <p><strong>Max Speed:</strong> {{ "%.1f"|format(race.max_speed) }} knots</p>
+                                <p><strong>Average Speed:</strong> {{ "%.1f"|format(race.avg_speed) }} knots</p>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <p>This race is not yet processed. Analysis data will be available once processing is complete.</p>
+                                    {% if race.processing_error %}
+                                        <p class="text-danger"><strong>Error:</strong> {{ race.processing_error }}</p>
+                                    {% endif %}
+                                    <button class="btn btn-sm btn-primary disabled">Process Race</button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card race-details-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Race Track</h5>
+                </div>
+                <div class="card-body">
+                    <div id="race-map" class="map-container">
+                        <div class="text-center p-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3">Map loading...</p>
+                        </div>
+                    </div>
+                    <div class="alert alert-primary">
+                        <p class="mb-0">Track visualization will be implemented in the next phase. This is a placeholder view.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Font Awesome for icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script>
+    // This is just a placeholder script. The actual map will be implemented in the next phase.
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize a map with a default location
+        const map = L.map('race-map').setView([41.0, -71.0], 10);
+        
+        // Add tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Add a message about the placeholder
+        const popup = L.popup()
+            .setLatLng([41.0, -71.0])
+            .setContent("Track visualization will be implemented in the next phase.")
+            .openOn(map);
+    });
+</script>
+{% endblock %}

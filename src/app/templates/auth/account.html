@@ -24,7 +24,7 @@
                             <a href="#" class="list-group-item list-group-item-action">Change Password</a>
                             <a href="#" class="list-group-item list-group-item-action">Update Profile</a>
                             <a href="{{ url_for('sailing.list_sessions') }}" class="list-group-item list-group-item-action">View My Sailing Sessions</a>
-                            <a href="{{ url_for('sailing.upload_gpx') }}" class="list-group-item list-group-item-action">Upload New GPX</a>
+                            <a href="{{ url_for('races.upload_race') }}" class="list-group-item list-group-item-action">Upload New GPX</a>
                         </div>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                 {% else %}
                     <div class="alert alert-info">
                         You haven't uploaded any sailing data yet. 
-                        <a href="{{ url_for('sailing.upload_gpx') }}" class="alert-link">Upload your first GPX file</a> to get started!
+                        <a href="{{ url_for('races.upload_race') }}" class="alert-link">Upload your first GPX file</a> to get started!
                     </div>
                 {% endif %}
             </div>

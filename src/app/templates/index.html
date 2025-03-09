@@ -22,7 +22,7 @@
                         {% else %}
                         <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
                             <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg px-4 me-md-2">Dashboard</a>
-                            <a href="{{ url_for('sailing.upload_gpx') }}" class="btn btn-outline-primary btn-lg px-4">Upload GPX</a>
+                            <a href="{{ url_for('races.upload_race') }}" class="btn btn-outline-primary btn-lg px-4">Upload GPX</a>
                         </div>
                         {% endif %}
                     </div>
@@ -151,7 +151,7 @@
                     </div>
                     {% else %}
                     <div class="mt-4">
-                        <a href="{{ url_for('sailing.upload_gpx') }}" class="btn btn-light btn-lg">Upload Your First GPX</a>
+                        <a href="{{ url_for('races.upload_race') }}" class="btn btn-light btn-lg">Upload Your First GPX</a>
                     </div>
                     {% endif %}
                 </div>

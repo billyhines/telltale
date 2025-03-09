@@ -108,3 +108,73 @@ class Race(db.Model):
     
     def __repr__(self):
         return f'<Race {self.race_name} {self.race_date}>'
+    
+    @classmethod
+    def create_from_form(cls, form, user_id, gpx_file_path):
+        """
+        Create a new race instance from form data
+        
+        Args:
+            form: The validated form data
+            user_id: ID of the user who owns this race
+            gpx_file_path: Path to the saved GPX file
+            
+        Returns:
+            Race: The newly created Race instance
+        """
+        race = cls(
+            user_id=user_id,
+            race_name=form.race_name.data,
+            race_date=form.race_date.data,
+            gpx_file_path=gpx_file_path,
+            is_processed=False
+        )
+        db.session.add(race)
+        db.session.commit()
+        return race
+    
+    def delete_with_data(self):
+        """
+        Delete this race and all associated data
+        
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            # Delete the GPX file
+            self.delete_gpx_file()
+            
+            # The relationships with cascade='all, delete-orphan' will 
+            # handle deletion of related records automatically
+            db.session.delete(self)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error deleting race: {str(e)}")
+            return False
+    
+    def to_dict(self):
+        """
+        Convert race to dictionary for API responses
+        
+        Returns:
+            dict: Race data
+        """
+        return {
+            'race_id': self.race_id,
+            'user_id': self.user_id,
+            'race_name': self.race_name,
+            'race_date': self.race_date.isoformat() if self.race_date else None,
+            'wind_direction': self.wind_direction,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'is_processed': self.is_processed,
+            'total_distance': self.total_distance,
+            'duration': self.duration,
+            'duration_formatted': self.duration_formatted,
+            'max_speed': self.max_speed,
+            'avg_speed': self.avg_speed,
+            'track_point_count': self.track_points.count() if self.track_points else 0,
+            'mark_count': self.marks.count() if self.marks else 0
+        }

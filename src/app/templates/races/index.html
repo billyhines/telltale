@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}My Races - Sailing Analytics{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Races</h2>
+        <a href="{{ url_for('races.upload_race') }}" class="btn btn-primary">
+            <i class="fas fa-upload me-2"></i> Upload New Race
+        </a>
+    </div>
+
+    {% if races %}
+        <div class="row">
+            {% for race in races %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card session-card h-100">
+                        <div class="card-header">
+                            <h5 class="mb-0">{{ race.race_name }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>Date:</strong> {{ race.race_date.strftime('%Y-%m-%d') }}
+                            </div>
+                            
+                            {% if race.is_processed %}
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="stat-label">Distance</div>
+                                        <div class="fw-bold">{{ "%.1f"|format(race.total_distance or 0) }} nm</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="stat-label">Duration</div>
+                                        <div class="fw-bold">{{ race.duration_formatted }}</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="stat-label">Max Speed</div>
+                                        <div class="fw-bold">{{ "%.1f"|format(race.max_speed or 0) }} kts</div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info mb-0">
+                                    {% if race.processing_error %}
+                                        <small>Error: {{ race.processing_error }}</small>
+                                    {% else %}
+                                        <small>Race data not yet processed</small>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <a href="{{ url_for('races.view_race', race_id=race.race_id) }}" class="btn btn-sm btn-primary">
+                                View Details
+                            </a>
+                            <form action="{{ url_for('races.delete_race', race_id=race.race_id) }}" method="POST" 
+                                  onsubmit="return confirm('Are you sure you want to delete this race? This action cannot be undone.')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <p>You haven't uploaded any races yet.</p>
+            <a href="{{ url_for('races.upload_race') }}" class="btn btn-primary mt-2">Upload Your First Race</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Font Awesome for icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+{% endblock %}
